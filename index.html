@@ -379,7 +379,7 @@
     dbReq.onsuccess = e => { db = e.target.result; renderBooks(); };
     
     let users = JSON.parse(localStorage.getItem('m_users_v30')) || [
-        { user: "admin", pass: "123456", name: "المدير العام", role: "admin", isBanned: false, avatar: "" },
+        { user: "Walid.ouargla98", pass: "W*1998*dz", name: "المدير العام", role: "admin", isBanned: false, avatar: "" },
         { user: "supervisor", pass: "123456", name: "مشرف المكتبة", role: "supervisor", isBanned: false, avatar: "" }
     ];
     let sections = JSON.parse(localStorage.getItem('m_sections_v30')) || ["شريعة", "لغة عربية", "تقنية", "فنون"];
@@ -1009,5 +1009,54 @@
     window.downloadBook = downloadBook;
     window.copyToClipboard = copyToClipboard;
 </script>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyAHLOcpDUHsXKIJz0_jkaZ-ZdssF9U52ok",
+    authDomain: "walidcom-94db4.firebaseapp.com",
+    projectId: "walidcom-94db4",
+    storageBucket: "walidcom-94db4.firebasestorage.app",
+    messagingSenderId: "1072588490388",
+    appId: "1:1072588490388:web:72dcce822ec905b1871681",
+    measurementId: "G-8C3W2KM006"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+// هذه النسخة ستقوم بتعريف الدالة من جديد لتعمل مع Firebase
+window.addNewPost = async function() {
+    const content = document.getElementById('postContent').value;
+    if (!content) return;
+
+    try {
+        // الوصول إلى Firestore الذي عرفناه سابقاً
+        const { collection, addDoc, serverTimestamp } = window.dbFunctions;
+        
+        await addDoc(collection(window.db, "posts"), {
+            author: activeUser.name,
+            content: content,
+            timestamp: serverTimestamp(),
+            likes: 0,
+            comments: []
+        });
+
+        // تنظيف الواجهة
+        document.getElementById('postContent').value = '';
+        if(typeof showCreatePostModal === 'function') showCreatePostModal(); 
+        alert("تم النشر بنجاح!");
+    } catch (error) {
+        console.error("خطأ: ", error);
+        alert("حدث خطأ أثناء النشر، تأكد من ربط Firebase بشكل صحيح");
+    }
+};
 </body>
 </html>
